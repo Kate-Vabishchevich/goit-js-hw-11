@@ -20,7 +20,7 @@ export class ImagesApiService {
             page: this.page,
         });
         const { data } = await axios(`?${options}`);
-        console.log(data);
+        // console.log(data);
         this.page += 1;
         return data;
     }

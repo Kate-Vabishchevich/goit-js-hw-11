@@ -12,14 +12,14 @@ const refs = {
 
 const imagesApiService = new ImagesApiService();
 const messagesService = new MessagesService();
-// const loadMoreBtn = new LoadMoreBtn("load-more", onLoadMore);
+const loadMoreBtn = new LoadMoreBtn("load-more", onLoadMoreBtn);
 
 refs.searchForm.addEventListener("submit", onFormSubmit);
 
 async function onFormSubmit(e) {
     e.preventDefault();
 
-    clearImageGallery();
+    clearImageGallery(); //очищаємо поле вводу
     imagesApiService.query = e.currentTarget.elements.searchQuery.value.trim();
     if (imagesApiService.query === "") {
         return messagesService.getInputInfo();
@@ -35,7 +35,7 @@ async function onFormSubmit(e) {
     }
 }
 
-async function onLoadMore() {
+async function onLoadMoreBtn() {
     loadMoreBtn.loading();
     try {
         const { hits, totalHits } = await imagesApiService.fetchImages();
