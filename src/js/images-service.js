@@ -7,6 +7,7 @@ export class ImagesApiService {
     constructor() {
         this.searchQuery = "";
         this.page = 1;
+        this.perPage = 40;
     }
 
     async fetchImages() {
@@ -16,7 +17,7 @@ export class ImagesApiService {
             image_type: "photo",
             orientation: "horizontal",
             safesearch: "true",
-            per_page: 40,
+            per_page: this.perPage,
             page: this.page,
         });
         const { data } = await axios(`?${options}`);

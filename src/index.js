@@ -1,4 +1,6 @@
 import axios from "axios";
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 import Notiflix from "notiflix";
 import { ImagesApiService } from "./js/images-service";
 import MessagesService from "./js/messages";
@@ -13,6 +15,10 @@ const refs = {
 const imagesApiService = new ImagesApiService();
 const messagesService = new MessagesService();
 const loadMoreBtn = new LoadMoreBtn("load-more", onLoadMoreBtn);
+const simpleLightBox = new SimpleLightbox(".gallery a", {
+    captionsData: 'alt',
+    captionDelay: 250,
+});
 
 refs.searchForm.addEventListener("submit", onFormSubmit);
 
@@ -28,27 +34,40 @@ async function onFormSubmit(e) {
 
     try {
         const { hits, totalHits } = await imagesApiService.fetchImages();
+
+        if (totalHits === 0) {
+        return messagesService.getNoImagesWarning();
+        }
+
+        messagesService.getSuccessInfo(totalHits);
+
         renderPictures(hits);
+        simpleLightBox.refresh();
         loadMoreBtn.show();
     } catch (error){
-        return Notiflix.Notify.failure("Something is wrong...")
+        return messagesService.getError();
     }
 }
 
 async function onLoadMoreBtn() {
     loadMoreBtn.loading();
     try {
-        const { hits, totalHits } = await imagesApiService.fetchImages();
-        getImagesMarkup(hits);
+        const { hits } = await imagesApiService.fetchImages();
+        renderPictures(hits);
+        simpleLightBox.refresh();
         loadMoreBtn.endLoading();
-    } catch (error){
-        return Notiflix.Notify.failure("Something is wrong...")
-    }
 
+        if (hits.length < imagesApiService.perPage) {
+            loadMoreBtn.hide();
+            messagesService.getEndOfResults();
+        }
+    } catch (error){
+        return messagesService.getError();
+    }
 }
 
 function renderPictures(data) {
-    const markupGallery = getImagesMarkup(data.hits);
+    const markupGallery = getImagesMarkup(data);
     refs.gallery.insertAdjacentHTML("beforeend", markupGallery)
 }
 
