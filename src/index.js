@@ -41,7 +41,7 @@ async function onFormSubmit(e) {
 
         messagesService.getSuccessInfo(totalHits);
 
-        renderPictures(hits);
+        renderPictures(hits); 
         simpleLightBox.refresh();
         loadMoreBtn.show();
     } catch (error){
